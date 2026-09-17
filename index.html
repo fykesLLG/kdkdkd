@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LiseCazino - Тест Кликера</title>
+    <style>
+        /* Стильный темный дизайн для казино */
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .casino-card {
+            background: #1e1e1e;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.2);
+            text-align: center;
+            border: 2px solid #00ff00;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #00ff00;
+            text-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        .balance-text {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+        }
+
+        /* Кнопка главного кликера */
+        .click-btn {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #00ff00, #00aa00);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            transition: transform 0.1s;
+        }
+
+        .click-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* Кнопка забрать 100к за рекламу */
+        .reward-btn {
+            margin-top: 30px;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            background: #ff0055;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 0, 85, 0.4);
+            display: block;
+            width: 100%;
+        }
+
+        /* Рекламная шторка-блокировщик на 30 секунд */
+        #videoBlocker {
+            display: none; /* Сначала скрыта */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 10, 0.98);
+            z-index: 9999;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .timer-text {
+            font-size: 2rem;
+            color: #ffffff;
+            margin-bottom: 15px;
+        }
+
+        #countdown {
+            color: #ff0055;
+            font-weight: bold;
+            font-size: 3rem;
+        }
+
+        .loading-text {
+            color: #888;
+            font-size: 1rem;
+            margin-bottom: 30px;
+        }
+
+        .close-btn {
+            display: none; /* Появится только через 30 сек */
+            padding: 15px 40px;
+            background: #00ff00;
+            color: black;
+            border: none;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 0 20px #00ff00;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="casino-card">
+        <h1>LiseCazino</h1>
+        <div class="balance-text">Баланс: <span id="balanceDisplay">1000</span> 🪙</div>
+        
+        <!-- Главный кликер -->
+        <button class="click-btn" onclick="clickCoins()">КЛИК!</button>
+        
+        <!-- Кнопка на +100.000 монет с рекламой -->
+        <button class="reward-btn" onclick="startReward()">🎰 ЗАБРАТЬ +100.000 МОНЕТ</button>
+    </div>
+
+    <!-- Полноекранный блокировщик экрана для рекламы -->
+    <div id="videoBlocker">
+        <div class="timer-text">Зачисление бонуса через: <span id="countdown">30</span> сек.</div>
+        <div class="loading-text">Загрузка безопасного рекламного шлюза Adsterra...</div>
+        
+        <!-- Кнопка закрытия (скрыта до конца таймера) -->
+        <button id="closeX" class="close-btn" onclick="closeRewardWindow()">❌ ЗАКРЫТЬ И ПОЛУЧИТЬ КЭШ</button>
+    </div>
+
+    <script>
+        // Загружаем сохраненный баланс из памяти, если его нет — ставим 1000
+        let balance = parseInt(localStorage.getItem('casino_balance')) || 1000;
+        document.getElementById('balanceDisplay').innerText = balance;
+
+        let timeLeft = 30;
+        let timerId;
+
+        // Функция обычного кликера (+1 монета)
+        function clickCoins() {
+            balance += 1;
+            updateBalance();
+        }
+
+        // Обновление цифр баланса на экране и сохранение в память
+        function updateBalance() {
+            document.getElementById('balanceDisplay').innerText = balance;
+            localStorage.setItem('casino_balance', balance);
+        }
+
+        // Нажатие на кнопку +100.000 (Запуск рекламы и таймера)
+        function startReward() {
+            // 1. Показываем блокирующий экран поверх игры
+            document.getElementById('videoBlocker').style.display = 'flex';
+            
+            // 2. ДИНАМИЧЕСКИЙ ВЫЗОВ ТВОЕЙ РЕКЛАМЫ ADSTERRA
+            // Твой скрипт загрузится и сработает прямо сейчас в фоне
+            let adScript = document.createElement('script');
+            adScript.src = "https://profitableratecpmnetwork.com";
+            document.body.appendChild(adScript);
+
+            // 3. Включаем тиканье таймера на 30 секунд без крестика
+            timerId = setInterval(function() {
+                timeLeft--;
+                document.getElementById('countdown').innerText = timeLeft;
+
+                // Время вышло — выдаем крестик
+                if (timeLeft <= 0) {
+                    clearInterval(timerId);
+                    document.getElementById('closeX').style.display = 'block';
+                    document.querySelector('.timer-text').innerHTML = "✨ Реклама проверена!";
+                    document.querySelector('.loading-text').style.display = 'none';
+                }
+            }, 1000);
+        }
+
+        // Нажатие на кнопку закрыть (когда прошли 30 секунд)
+        function closeRewardWindow() {
+            // Начисляем обещанные 100 тысяч
+            balance += 100000;
+            updateBalance();
+
+            // Прячем шторку блокировщика
+            document.getElementById('videoBlocker').style.display = 'none';
+            
+            // Сбрасываем настройки таймера для следующего раза
+            timeLeft = 30;
+            document.getElementById('closeX').style.display = 'none';
+            document.getElementById('countdown').innerText = timeLeft;
+            document.querySelector('.timer-text').innerHTML = 'Зачисление бонуса через: <span id="countdown">30</span> сек.';
+            document.querySelector('.loading-text').style.display = 'block';
+
+            alert('🔥 100.000 монет успешно зачислены на твой баланс!');
+        }
+    </script>
+
+</body>
+</html>
